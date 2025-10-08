@@ -1,0 +1,36 @@
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-title {
+  font-size: 1.75rem;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.error-message {
+  color: var(--text-gray);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+}

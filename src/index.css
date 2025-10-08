@@ -1,0 +1,128 @@
+:root {
+  /* Nueva paleta de colores morada y verde */
+  --primary-purple: #7000a3;
+  --primary-dark: #5a0084;
+  --primary-light: #992acb;
+  --secondary-purple: #7f00b2;
+  --accent-purple: #992acb;
+  --primary-green: #23a800;
+  --secondary-green: #53cb2a;
+  --dark-bg: #1a0b2e;
+  --darker-bg: #0f0920;
+  --card-bg: #2d1b4e;
+  --text-light: #f3f4f6;
+  --text-gray: #d1d5db;
+  --success: #23a800;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--darker-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-purple);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-purple);
+}
+
+/* Estilos globales de botones */
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-purple) 0%,
+    var(--secondary-purple) 100%
+  );
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(112, 0, 163, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(112, 0, 163, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--primary-purple);
+  color: var(--primary-light);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--primary-purple);
+  color: white;
+}
+
+/* Container global */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-purple);
+}
