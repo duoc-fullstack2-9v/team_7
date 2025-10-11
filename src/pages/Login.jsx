@@ -109,7 +109,6 @@ const Login = () => {
       // Simular llamada a API (reemplazar con tu lógica real)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Aquí iría tu lógica de autenticación real
       // Por ahora, si el email es admin@hakey.com, será administrador
       const isAdmin = formData.email.toLowerCase() === "admin@hakey.com";
 
