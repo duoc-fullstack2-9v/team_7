@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { sendWelcomeEmail } from "../services/emailService";
 import "./Register.css";
 
 const Register = () => {
@@ -186,18 +187,36 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      // Simular llamada a API (reemplazar con tu lógica real)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log('🚀 Iniciando proceso de registro...');
+      
+      // 📧 PRIMERO: Enviar email de bienvenida
+      console.log('📧 Enviando email de bienvenida...');
+      const emailResult = await sendWelcomeEmail({
+        name: formData.name,
+        email: formData.email,
+      });
 
-      // Aquí iría tu lógica de registro real
+      if (emailResult.success) {
+        console.log('✅ Email de bienvenida enviado exitosamente');
+      } else {
+        console.warn('⚠️ No se pudo enviar el email de bienvenida:', emailResult.error);
+      }
+
+      // Simular llamada a API (reemplazar con tu lógica real)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // LUEGO: Login y redirección
       login({
         email: formData.email,
         name: formData.name,
       });
 
+      console.log('✅ Registro completado, redirigiendo...');
+      
       // Redirigir al home o dashboard
       navigate("/");
     } catch (error) {
+      console.error('❌ Error en el registro:', error);
       setErrors({
         submit: "Error al crear la cuenta. Por favor, intenta nuevamente.",
       });

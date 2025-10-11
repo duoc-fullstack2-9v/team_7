@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { sendPurchaseConfirmation } from "../services/emailService";
 import { FiArrowLeft } from "react-icons/fi";
 import "./Login.css";
 import "./FormularioCompra.css";
@@ -151,9 +152,32 @@ const FormularioCompra = () => {
             const nombrePrueba = formData.nombre.toLowerCase() === "javier arancibia";
 
             if (numeroTarjetaPrueba && cvvPrueba && fechaExpiracionPrueba && numeroPrueba && emailPrueba && nombrePrueba) {
-                setTimeout(() => {
-                    navigate("/compraExitosa");
-                }, 1500);
+                try {
+                    // 📧 Enviar email de confirmación de compra
+                    const emailResult = await sendPurchaseConfirmation({
+                        userName: formData.nombre,
+                        userEmail: formData.email,
+                        items: cart,
+                        subtotal: subtotal,
+                        iva: iva,
+                        total: total,
+                    });
+
+                    if (emailResult.success) {
+                        console.log('✅ Email de confirmación enviado exitosamente');
+                    } else {
+                        console.warn('⚠️ No se pudo enviar el email de confirmación:', emailResult.error);
+                    }
+
+                    // Redirigir a página de compra exitosa
+                    setTimeout(() => {
+                        navigate("/compraExitosa");
+                    }, 1500);
+                } catch (error) {
+                    console.error('Error en el proceso de compra:', error);
+                    setErrors({ submit: "Error al procesar la compra" });
+                    setIsSubmitting(false);
+                }
             } else {
                 setErrors({ submit: "Los credenciales son incorrectos, por favor verifica los datos ingresados" });
                 setIsSubmitting(false);
