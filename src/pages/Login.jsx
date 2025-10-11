@@ -113,6 +113,16 @@ const Login = () => {
       // Por ahora, si el email es admin@hakey.com, será administrador
       const isAdmin = formData.email.toLowerCase() === "admin@hakey.com";
 
+      const AdminPass = formData.password === "adminhakey";
+
+      if (isAdmin && !AdminPass) {
+        setErrors({
+          submit: "Credenciales de administrador incorrectas.",
+        });
+        setIsSubmitting(false);
+        return;
+      }   
+
       login({
         email: formData.email,
         name: formData.email.split("@")[0],
