@@ -1,9 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { FiArrowLeft } from "react-icons/fi";
 import "./Login.css";
+import "./FormularioCompra.css";
 
 const FormularioCompra = () => {
     const navigate = useNavigate();
+    const { cart, getCartTotal } = useCart();
+    
+    // Constante de IVA (19% en Chile)
+    const IVA_RATE = 0.19;
 
     const [formData, setFormData] = useState({
         nombre: "",
@@ -16,6 +23,18 @@ const FormularioCompra = () => {
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Redirigir si el carrito está vacío
+    useEffect(() => {
+        if (cart.length === 0) {
+            navigate("/cart");
+        }
+    }, [cart, navigate]);
+
+    // Calcular subtotal, IVA y total
+    const subtotal = getCartTotal();
+    const iva = subtotal * IVA_RATE;
+    const total = subtotal + iva;
 
     // Validación de email
     const validateEmail = (email) => {
@@ -145,145 +164,204 @@ const FormularioCompra = () => {
     }; 
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <h1>Formulario de Compra</h1>
-                    <p>Completa tus datos para finalizar la compra</p>
+        <div className="formulario-compra-container">
+            <div className="container">
+                <Link to="/cart" className="back-link">
+                    <FiArrowLeft /> Volver al Carrito
+                </Link>
+
+                <h1 className="page-title">Finalizar Compra</h1>
+
+                <div className="compra-layout">
+                    {/* Formulario de Datos */}
+                    <div className="formulario-section">
+                        <div className="login-card">
+                            <div className="login-header">
+                                <h2>Datos de Facturación</h2>
+                                <p>Completa tus datos para finalizar la compra</p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="login-form" noValidate>
+                                <div className="form-group">
+                                    <label htmlFor="nombre">
+                                        Nombre Completo <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="nombre"
+                                        name="nombre"
+                                        value={formData.nombre}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.nombre ? "input-error" : ""}
+                                        placeholder="Tu nombre completo"
+                                        autoComplete="name"
+                                    />
+                                    {errors.nombre && (
+                                        <span className="error-message">{errors.nombre}</span>
+                                    )}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="email">
+                                        Email <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.email ? "input-error" : ""}
+                                        placeholder="tu@email.com"
+                                        autoComplete="email"
+                                    />
+                                    {errors.email && (
+                                        <span className="error-message">{errors.email}</span>
+                                    )}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="numero">
+                                        Número de Teléfono <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="numero"
+                                        name="numero"
+                                        value={formData.numero}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.numero ? "input-error" : ""}
+                                        placeholder="972317686"
+                                        autoComplete="tel"
+                                    />
+                                    {errors.numero && (
+                                        <span className="error-message">{errors.numero}</span>
+                                    )}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="numeroTarjeta">
+                                        Número de Tarjeta <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="numeroTarjeta"
+                                        name="numeroTarjeta"
+                                        value={formData.numeroTarjeta}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.numeroTarjeta ? "input-error" : ""}
+                                        placeholder="1234567812345678"
+                                        autoComplete="cc-number"
+                                        maxLength="16"
+                                    />
+                                    {errors.numeroTarjeta && (
+                                        <span className="error-message">{errors.numeroTarjeta}</span>
+                                    )}
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="fechaExpiracion">
+                                            Fecha de Expiración <span className="required">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="fechaExpiracion"
+                                            name="fechaExpiracion"
+                                            value={formData.fechaExpiracion}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            className={errors.fechaExpiracion ? "input-error" : ""}
+                                            placeholder="12/25"
+                                            autoComplete="cc-exp"
+                                            maxLength="5"
+                                        />
+                                        {errors.fechaExpiracion && (
+                                            <span className="error-message">{errors.fechaExpiracion}</span>
+                                        )}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="cvv">
+                                            CVV <span className="required">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="cvv"
+                                            name="cvv"
+                                            value={formData.cvv}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            className={errors.cvv ? "input-error" : ""}
+                                            placeholder="123"
+                                            autoComplete="cc-csc"
+                                            maxLength="3"
+                                        />
+                                        {errors.cvv && (
+                                            <span className="error-message">{errors.cvv}</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {errors.submit && (
+                                    <div className="error-message submit-error">{errors.submit}</div>
+                                )}
+
+                                <button type="submit" className="btn-submit" disabled={isSubmitting}>
+                                    {isSubmitting ? "Procesando compra..." : `Pagar $${total.toFixed(2)}`}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {/* Resumen del Pedido */}
+                    <div className="resumen-section">
+                        <div className="cart-summary">
+                            <h2 className="summary-title">Resumen del Pedido</h2>
+
+                            {/* Lista de productos */}
+                            <div className="order-items">
+                                {cart.map((item) => (
+                                    <div key={item.id} className="order-item">
+                                        <img src={item.image} alt={item.title} className="order-item-image" />
+                                        <div className="order-item-details">
+                                            <h4 className="order-item-title">{item.title}</h4>
+                                            <p className="order-item-quantity">Cantidad: {item.quantity}</p>
+                                        </div>
+                                        <div className="order-item-price">
+                                            ${(item.price * item.quantity).toFixed(2)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Cálculos */}
+                            <div className="summary-details">
+                                <div className="summary-row">
+                                    <span>Subtotal</span>
+                                    <span>${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div className="summary-row">
+                                    <span>IVA (19%)</span>
+                                    <span>${iva.toFixed(2)}</span>
+                                </div>
+                                <div className="summary-row total-row">
+                                    <span>Total</span>
+                                    <span className="total-amount">${total.toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            <div className="security-badges">
+                                <div className="badge">🔒 Pago Seguro</div>
+                                <div className="badge">✓ Entrega Instantánea</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <form onSubmit={handleSubmit} className="login-form" noValidate>
-                    <div className="form-group">
-                        <label htmlFor="nombre">
-                            Nombre Completo <span className="required">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            value={formData.nombre}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.nombre ? "input-error" : ""}
-                            placeholder="Tu nombre completo"
-                            autoComplete="name"
-                        />
-                        {errors.nombre && (
-                            <span className="error-message">{errors.nombre}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">
-                            Email <span className="required">*</span>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.email ? "input-error" : ""}
-                            placeholder="tu@email.com"
-                            autoComplete="email"
-                        />
-                        {errors.email && (
-                            <span className="error-message">{errors.email}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="numero">
-                            Número de Teléfono <span className="required">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="numero"
-                            name="numero"
-                            value={formData.numero}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.numero ? "input-error" : ""}
-                            placeholder="972317686"
-                            autoComplete="tel"
-                        />
-                        {errors.numero && (
-                            <span className="error-message">{errors.numero}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="numeroTarjeta">
-                            Número de Tarjeta <span className="required">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="numeroTarjeta"
-                            name="numeroTarjeta"
-                            value={formData.numeroTarjeta}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.numeroTarjeta ? "input-error" : ""}
-                            placeholder="1234567812345678"
-                            autoComplete="cc-number"
-                            maxLength="16"
-                        />
-                        {errors.numeroTarjeta && (
-                            <span className="error-message">{errors.numeroTarjeta}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="fechaExpiracion">
-                            Fecha de Expiración <span className="required">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="fechaExpiracion"
-                            name="fechaExpiracion"
-                            value={formData.fechaExpiracion}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.fechaExpiracion ? "input-error" : ""}
-                            placeholder="12/25"
-                            autoComplete="cc-exp"
-                            maxLength="5"
-                        />
-                        {errors.fechaExpiracion && (
-                            <span className="error-message">{errors.fechaExpiracion}</span>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="cvv">
-                            CVV <span className="required">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="cvv"
-                            name="cvv"
-                            value={formData.cvv}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.cvv ? "input-error" : ""}
-                            placeholder="123"
-                            autoComplete="cc-csc"
-                            maxLength="3"
-                        />
-                        {errors.cvv && (
-                            <span className="error-message">{errors.cvv}</span>
-                        )}
-                    </div>
-
-                    {errors.submit && (
-                        <div className="error-message submit-error">{errors.submit}</div>
-                    )}
-
-                    <button type="submit" className="btn-submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Procesando compra..." : "Finalizar Compra"}
-                    </button>
-                </form>
             </div>
         </div>
     );

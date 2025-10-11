@@ -123,11 +123,9 @@ const Cart = () => {
               </div>
             </div>
 
-            <button className="checkout-btn">
-              <Link to="/FormularioCompra">
-                <FiShoppingBag /> Proceder al Pago
-              </Link>
-            </button>
+            <Link to="/formularioCompra" className="checkout-btn">
+              <FiShoppingBag /> Proceder al Pago
+            </Link>
 
             <div className="payment-methods">
               <p>Métodos de pago aceptados:</p>

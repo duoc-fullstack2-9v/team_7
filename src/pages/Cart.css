@@ -304,11 +304,13 @@
   justify-content: center;
   gap: 0.75rem;
   box-shadow: 0 4px 20px rgba(112, 0, 163, 0.4);
+  text-decoration: none;
 }
 
 .checkout-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(112, 0, 163, 0.6);
+  color: white;
 }
 
 .payment-methods {
