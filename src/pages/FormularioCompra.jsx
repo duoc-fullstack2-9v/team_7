@@ -143,15 +143,47 @@ const FormularioCompra = () => {
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length === 0) {
-            // Verificar credenciales de prueba
-            const numeroTarjetaPrueba = formData.numeroTarjeta === "1234567812345678";
-            const cvvPrueba = formData.cvv === "123";
-            const fechaExpiracionPrueba = formData.fechaExpiracion === "12/25";
-            const numeroPrueba = formData.numero === "972317686";
-            const emailPrueba = formData.email === "admin@hakey.com";
-            const nombrePrueba = formData.nombre.toLowerCase() === "javier arancibia";
+            // ========================================
+            // CREDENCIALES DE PRUEBA - Usuario 1
+            // ========================================
+            // Nombre: Javier Arancibia
+            // Email: jr.tecnon@gmail.com
+            // Teléfono: 972317686
+            // Tarjeta: 1234567812345678
+            // Expiración: 12/25
+            // CVV: 123
+            const usuario1 = {
+                numeroTarjeta: formData.numeroTarjeta === "1234567812345678",
+                cvv: formData.cvv === "123",
+                fechaExpiracion: formData.fechaExpiracion === "12/25",
+                numero: formData.numero === "972317686",
+                email: formData.email === "jr.tecnon@gmail.com",
+                nombre: formData.nombre.toLowerCase() === "javier arancibia"
+            };
 
-            if (numeroTarjetaPrueba && cvvPrueba && fechaExpiracionPrueba && numeroPrueba && emailPrueba && nombrePrueba) {
+            // ========================================
+            // CREDENCIALES DE PRUEBA - Usuario 2
+            // ========================================
+            // Nombre: María García
+            // Email: maria.garcia@ejemplo.com
+            // Teléfono: 987654321
+            // Tarjeta: 8765432187654321
+            // Expiración: 06/26
+            // CVV: 456
+            const usuario2 = {
+                numeroTarjeta: formData.numeroTarjeta === "8765432187654321",
+                cvv: formData.cvv === "456",
+                fechaExpiracion: formData.fechaExpiracion === "06/26",
+                numero: formData.numero === "987654321",
+                email: formData.email === "ce.toros@duocuc.cl",
+                nombre: formData.nombre.toLowerCase() === "cesaruto" || formData.nombre.toLowerCase() === "maria garcia"
+            };
+
+            // Verificar si es usuario 1 o usuario 2
+            const esUsuario1 = Object.values(usuario1).every(value => value === true);
+            const esUsuario2 = Object.values(usuario2).every(value => value === true);
+
+            if (esUsuario1 || esUsuario2) {
                 try {
                     // 📧 Enviar email de confirmación de compra
                     const emailResult = await sendPurchaseConfirmation({

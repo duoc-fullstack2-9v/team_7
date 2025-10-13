@@ -11,7 +11,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminPanel from "./pages/AdminPanel";
 import FormularioCompra from "./pages/FormularioCompra";
-import EmailTest from "./pages/EmailTest";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CartNotification from "./components/CartNotification";
 import "./App.css";
@@ -33,7 +32,6 @@ function AppContent() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/formularioCompra" element={<FormularioCompra />} />
-            <Route path="/email-test" element={<EmailTest />} />
             <Route
               path="/admin"
               element={
