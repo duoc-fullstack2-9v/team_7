@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { sendWelcomeEmail } from "../services/emailService";
+import { registerUser } from "../services/usersApi";
 import "./Register.css";
 
 const Register = () => {
@@ -187,36 +188,63 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🚀 Iniciando proceso de registro...');
-      
-      // 📧 PRIMERO: Enviar email de bienvenida
-      console.log('📧 Enviando email de bienvenida...');
+      console.log("🚀 Iniciando proceso de registro...");
+
+      // 1️⃣ PRIMERO: Registrar usuario en la base de datos
+      console.log("💾 Registrando usuario en la base de datos...");
+      const registerResult = await registerUser({
+        nombre: formData.name,
+        correo: formData.email,
+        numero: formData.phone || null,
+        contrasena: formData.password,
+      });
+
+      if (!registerResult.success) {
+        console.error("❌ Error al registrar usuario:", registerResult.error);
+        setErrors({
+          submit:
+            registerResult.error ||
+            "Error al crear la cuenta. Por favor, intenta nuevamente.",
+        });
+        return;
+      }
+
+      console.log("✅ Usuario registrado exitosamente:", registerResult.user);
+
+      // 2️⃣ SEGUNDO: Enviar email de bienvenida
+      console.log("📧 Enviando email de bienvenida...");
       const emailResult = await sendWelcomeEmail({
         name: formData.name,
         email: formData.email,
       });
 
       if (emailResult.success) {
-        console.log('✅ Email de bienvenida enviado exitosamente');
+        console.log("✅ Email de bienvenida enviado exitosamente");
       } else {
-        console.warn('⚠️ No se pudo enviar el email de bienvenida:', emailResult.error);
+        console.warn(
+          "⚠️ No se pudo enviar el email de bienvenida:",
+          emailResult.error
+        );
+        // No detener el proceso si falla el email
       }
 
-      // Simular llamada a API (reemplazar con tu lógica real)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // 3️⃣ TERCERO: Login automático y redirección
+      const isAdmin = formData.email.toLowerCase() === "admin@hakey.com";
 
-      // LUEGO: Login y redirección
       login({
-        email: formData.email,
-        name: formData.name,
+        id: registerResult.user.id,
+        email: registerResult.user.correo,
+        name: registerResult.user.nombre,
+        phone: registerResult.user.numero,
+        isAdmin: isAdmin,
       });
 
-      console.log('✅ Registro completado, redirigiendo...');
-      
+      console.log("✅ Registro completado, redirigiendo...");
+
       // Redirigir al home o dashboard
       navigate("/");
     } catch (error) {
-      console.error('❌ Error en el registro:', error);
+      console.error("❌ Error en el registro:", error);
       setErrors({
         submit: "Error al crear la cuenta. Por favor, intenta nuevamente.",
       });

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { loginUser } from "../services/usersApi";
 import "./Login.css";
 
 const Login = () => {
@@ -93,44 +94,32 @@ const Login = () => {
   };
 
   // Manejar envío del formulario
+  // handleSubmit (versión simplificada asumiendo que la API usa 'email' y 'password')
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formErrors = validateForm();
-
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // Simular llamada a API (reemplazar con tu lógica real)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // 1. Envías los datos del estado directamente
+      const loginResult = await loginUser(formData);
 
-      // Por ahora, si el email es admin@hakey.com, será administrador
-      const isAdmin = formData.email.toLowerCase() === "admin@hakey.com";
+      if (!loginResult.success) {
+        setErrors({ submit: loginResult.error || "Error al iniciar sesión." });
+        return; // No olvides el return aquí
+      }
 
-      const AdminPass = formData.password === "adminhakey";
+      // 2. Usas el objeto del usuario directamente (si la API devuelve 'email', 'name', etc.)
+      login(loginResult.user);
 
-      if (isAdmin && !AdminPass) {
-        setErrors({
-          submit: "Credenciales de administrador incorrectas.",
-        });
-        setIsSubmitting(false);
-        return;
-      }   
-
-      login({
-        email: formData.email,
-        name: formData.email.split("@")[0],
-        isAdmin: isAdmin,
-      });
-
-      // Redirigir al home o dashboard (admin va al panel)
-      navigate(isAdmin ? "/admin" : "/");
+      navigate(loginResult.user.isAdmin ? "/admin" : "/");
     } catch (error) {
+      console.error("❌ Error en el login:", error);
       setErrors({
         submit: "Error al iniciar sesión. Por favor, intenta nuevamente.",
       });

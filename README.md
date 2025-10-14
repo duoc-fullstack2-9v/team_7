@@ -1,4 +1,91 @@
-# React + Vite
+# 🎮 HAKEY - E-commerce de Videojuegos
+
+Plataforma de e-commerce especializada en la venta de videojuegos digitales.
+
+## 🚀 Inicio Rápido
+
+```bash
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Edita .env con tus configuraciones
+
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+La aplicación estará disponible en: `http://localhost:5173`
+
+## 📚 Documentación
+
+Para documentación completa del proyecto, consulta:
+
+- **[📖 Documentación del Proyecto](./docs/PROYECTO.md)** - Guía completa
+
+## 🛠️ Stack Tecnológico
+
+- **Frontend:** React 18 + Vite
+- **Backend:** Node.js + Express (API en Vercel)
+- **Base de Datos:** MySQL
+- **Autenticación:** bcryptjs
+- **Email:** Nodemailer
+
+## ✨ Características Principales
+
+- ✅ Catálogo de videojuegos
+- ✅ Carrito de compras
+- ✅ Sistema de autenticación (registro/login)
+- ✅ Proceso de checkout
+- ✅ Confirmación por email
+- ✅ Panel de administración
+- ✅ Gestión de usuarios
+
+## 🔗 URLs de la API
+
+```env
+# API de Juegos y Usuarios
+VITE_API_URL=https://hakey-api-catalogo.vercel.app/api
+
+# API de Emails
+VITE_EMAIL_API_URL=http://localhost:5000/api
+```
+
+## 👥 Usuarios del Sistema
+
+- **Usuario Normal:** Cualquier email válido
+- **Administrador:** `admin@hakey.com`
+
+## 📝 Scripts
+
+```bash
+npm run dev      # Desarrollo
+npm run build    # Build de producción
+npm run preview  # Preview del build
+npm run lint     # Linting
+```
+
+## 📂 Estructura
+
+```
+src/
+├── components/      # Componentes reutilizables
+├── pages/          # Páginas principales
+├── services/       # Servicios de API
+├── context/        # Context API (Auth, Cart)
+├── hooks/          # Custom hooks
+└── assets/         # Recursos estáticos
+```
+
+## 🐛 Soporte
+
+Para documentación detallada, troubleshooting y guías, consulta `docs/PROYECTO.md`
+
+---
+
+**Team 7 - DUOC UC - Fullstack 2**  
+Branch: `feature/implementacion`+ Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
