@@ -10,6 +10,7 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminPanel from "./pages/AdminPanel";
+import NotFound from "./pages/NotFound";
 import FormularioCompra from "./pages/FormularioCompra";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CartNotification from "./components/CartNotification";
@@ -52,6 +53,7 @@ function AppContent() {
                 </div>
               }
             />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />

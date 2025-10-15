@@ -8,7 +8,10 @@ const handleResponse = async (response) => {
       .catch(() => ({ message: "Error en la solicitud" }));
     throw new Error(error.message || `Error: ${response.status}`);
   }
-  return response.json();
+  
+  // Si la respuesta está vacía (como en DELETE), retornar objeto vacío
+  const text = await response.text();
+  return text ? JSON.parse(text) : {};
 };
 
 // GET - Obtener todos los juegos
