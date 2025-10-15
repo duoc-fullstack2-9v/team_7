@@ -28,39 +28,3 @@
 ║                          📋 GUÍA RÁPIDA DE USO                        ║
 ╚════════════════════════════════════════════════════════════════════════╝
 
-1️⃣  Agrega productos al carrito
-2️⃣  Ve al checkout
-3️⃣  Copia y pega las credenciales del USUARIO 1 o USUARIO 2
-4️⃣  Haz clic en "Pagar"
-5️⃣  Revisa el email en la bandeja de entrada
-
-╔════════════════════════════════════════════════════════════════════════╗
-║                          ⚠️  IMPORTANTE                                ║
-╚════════════════════════════════════════════════════════════════════════╝
-
-✅ Escribe los datos EXACTAMENTE como aparecen arriba
-✅ Respeta mayúsculas, minúsculas y espacios
-✅ No agregues espacios extra
-
-❌ Solo funcionan estas dos combinaciones de credenciales
-❌ Cualquier otro dato será rechazado
-
-╔════════════════════════════════════════════════════════════════════════╗
-║                       📧 EMAILS DE CONFIRMACIÓN                        ║
-╚════════════════════════════════════════════════════════════════════════╝
-
-🔹 Usuario 1 → Email a: jr.tecnon@gmail.com
-🔹 Usuario 2 → Email a: maria.garcia@ejemplo.com
-
-El email incluirá:
-  ✅ Número de orden
-  ✅ Fecha de compra
-  ✅ Detalle de productos
-  ✅ Total de la compra
-
-╔════════════════════════════════════════════════════════════════════════╗
-║                    💡 PARA MÁS INFORMACIÓN                             ║
-╚════════════════════════════════════════════════════════════════════════╝
-
-📄 Ver archivo: CREDENCIALES_PRUEBA.md
-📄 Documentación completa, ejemplos y troubleshooting
