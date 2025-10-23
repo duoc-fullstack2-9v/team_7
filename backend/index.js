@@ -74,10 +74,29 @@ app.post("/api/auth/login", async (req, res) => {
     }
 
     // Find user by email
-    const [rows] = await pool.execute(
-      "SELECT id, nombre, correo, numero, contrasena, created_at, updated_at FROM users WHERE correo = ?",
-      [correo]
-    );
+    let rows;
+    let selectedWithIsAdmin = false;
+    try {
+      // Intentar leer la columna is_admin si existe en la tabla
+      const result = await pool.execute(
+        "SELECT id, nombre, correo, numero, contrasena, created_at, updated_at, is_admin FROM users WHERE correo = ?",
+        [correo]
+      );
+      rows = result[0];
+      selectedWithIsAdmin = true;
+    } catch (err) {
+      // Si la columna is_admin no existe (compatibilidad), hacer la consulta sin ella
+      if (err && /Unknown column|ER_BAD_FIELD_ERROR/i.test(err.message || "")) {
+        const result = await pool.execute(
+          "SELECT id, nombre, correo, numero, contrasena, created_at, updated_at FROM users WHERE correo = ?",
+          [correo]
+        );
+        rows = result[0];
+        selectedWithIsAdmin = false;
+      } else {
+        throw err; // rethrow otros errores
+      }
+    }
 
     if (rows.length === 0) {
       return res.status(401).json({
@@ -96,8 +115,21 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
-    // Check if user is admin (based on email)
-    const isAdmin = correo.toLowerCase() === "admin@hakey.com";
+    // Determine if user is admin:
+    // - prefer the is_admin column if it was selected from the DB
+    // - otherwise fallback to the previous email-based check for compatibility
+    let isAdmin = false;
+    if (
+      selectedWithIsAdmin &&
+      rows[0] &&
+      Object.prototype.hasOwnProperty.call(rows[0], "is_admin")
+    ) {
+      const raw = rows[0].is_admin;
+      // aceptar 1/0, '1'/'0', boolean
+      isAdmin = raw === 1 || raw === "1" || raw === true || raw === "true";
+    } else {
+      isAdmin = correo.toLowerCase() === "admin@hakey.com";
+    }
 
     // Return user data (without password)
     const userData = {

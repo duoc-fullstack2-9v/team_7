@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
   nombre VARCHAR(100) NOT NULL,
   correo VARCHAR(255) NOT NULL UNIQUE,
   numero VARCHAR(20) DEFAULT NULL,
+  -- Nuevo campo para indicar si el usuario es administrador (0/1)
+  is_admin TINYINT(1) DEFAULT 0,
   contrasena VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -21,9 +23,12 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Insert admin user (password: adminhakey)
 -- Password hash generated with bcrypt (salt rounds: 10)
-INSERT INTO users (nombre, correo, numero, contrasena) VALUES 
-('Administrador', 'admin@hakey.com', NULL, '$2a$10$YourHashedPasswordHere')
+INSERT INTO users (nombre, correo, numero, is_admin, contrasena) VALUES 
+('Administrador', 'admin@hakey.com', NULL, 1, '$2a$10$YourHashedPasswordHere')
 ON DUPLICATE KEY UPDATE nombre = nombre;
+
+-- Si ya existe la tabla y quieres añadir la columna is_admin a una instalación existente:
+-- ALTER TABLE users ADD COLUMN is_admin TINYINT(1) DEFAULT 0;
 
 -- Verify table structure
 DESCRIBE users;
