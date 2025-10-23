@@ -1,18 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// https://vite.dev/config/
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 export default defineConfig({
-  plugins: [react()],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
-  },
-  preview: {
-    port: 3000,
-    strictPort: true,
-  },
-})
+plugins: [react()],
+base: "./",
+test: {
+globals: true,
+environment: "jsdom",
+setupFiles: "./tests/setup.js",
+coverage: {
+provider: "v8",
+reporter: ["text", "html", "json"],
+exclude: [
+  "node_modules/",
+  "tests/",
+  "**/*.css",
+  "**/assets/**",
+],
+},
+},
+});

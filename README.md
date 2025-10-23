@@ -23,6 +23,9 @@ La aplicación estará disponible en: `http://localhost:5173`
 Para documentación completa del proyecto, consulta:
 
 - **[📖 Documentación del Proyecto](./docs/PROYECTO.md)** - Guía completa
+- **[🧪 Guía de Pruebas Unitarias](./TESTING_GUIDE.md)** - Documentación completa de tests
+- **[⚡ Referencia Rápida de Tests](./TESTING_QUICK_REFERENCE.md)** - Resumen visual
+- **[💻 Ejemplos de Código](./TESTING_EXAMPLES.md)** - Ejemplos prácticos
 
 ## 🛠️ Stack Tecnológico
 
@@ -64,7 +67,37 @@ npm run dev      # Desarrollo
 npm run build    # Build de producción
 npm run preview  # Preview del build
 npm run lint     # Linting
+
+# 🧪 TESTING
+npm test                 # Ejecutar tests en modo watch
+npm test -- --run        # Ejecutar tests una sola vez
+npm run test:ui         # Ver tests en interfaz visual
+npm run test:coverage   # Generar reporte de cobertura
 ```
+
+## 🧪 Pruebas Unitarias
+
+El proyecto cuenta con **130 pruebas unitarias** que verifican el correcto funcionamiento de todos los componentes principales.
+
+### Resumen de Cobertura
+
+```
+✅ 12 archivos de prueba
+✅ 130 tests totales
+✅ 100% pasando
+✅ 5.6 segundos de duración
+```
+
+### Áreas Probadas
+
+- **Páginas:** Home, Cart, Catalog, Login, Register, GameDetail
+- **Componentes:** Header, GameCard, Loading, ErrorMessage, CartNotification, TextType
+- **Funcionalidades:** Validaciones, Interacciones, Navegación, Renderización
+
+Para más detalles sobre las pruebas, consulta:
+- [Guía Completa de Testing](./TESTING_GUIDE.md)
+- [Referencia Rápida](./TESTING_QUICK_REFERENCE.md)
+- [Ejemplos de Código](./TESTING_EXAMPLES.md)
 
 ## 📂 Estructura
 
