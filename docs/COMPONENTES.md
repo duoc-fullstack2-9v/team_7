@@ -189,15 +189,89 @@ Detalles internos relevantes:
 
 ---
 
-Si quieres, puedo:
-
-- Generar PropTypes/Typescript mínimos para `GameCard` y `CartContext`.
-- Añadir los tests unitarios básicos para el `CartContext`.
-- Expandir la documentación con diagramas (texto ASCII o imágenes) o ejemplos de JSON de `game`.
-
-Indica qué prefieres y lo implemento.
-
 ---
+
+## 10. Router y flujo del código (explicación para estudiar y presentar)
+
+Esto no es documentación API-style, sino una guía para que puedas entender y explicar en voz alta cómo fluye la navegación y qué hace el código cuando el usuario mueve la aplicación.
+
+Resumen rápido:
+
+- El punto de entrada monta React en `src/main.jsx` y renderiza `<App />`.
+- `App.jsx` envuelve la app en `AuthProvider` y `CartProvider`, después monta el `Router` y las `Routes` dentro de `AppContent`.
+- Las rutas están definidas con `react-router-dom` y usan `ProtectedRoute` para restringir acceso al panel admin.
+
+Estructura de rutas (lista):
+
+- `/` → `Home` (página principal)
+- `/catalog` → `Catalog` (listado de juegos)
+- `/game/:id` → `GameDetail` (detalle de un juego)
+- `/cart` → `Cart` (page)
+- `/login` → `Login`
+- `/register` → `Register`
+- `/formularioCompra` → `FormularioCompra`
+- `/admin` → `AdminPanel` (envuelto en `ProtectedRoute adminOnly={true}`)
+- `/about` → página estática pequeña
+- `*` → `NotFound`
+
+ProtectedRoute — comportamiento clave
+
+- `ProtectedRoute` usa `useAuth()` para leer `{ isAuthenticated, user, isLoading }`.
+- Si `isLoading` es true muestra un placeholder "Cargando..." (espera a que el estado de auth se resuelva).
+- Si no está autenticado (`!isAuthenticated`) redirige a `/login` con `<Navigate to="/login" replace />`.
+- Si la ruta es `adminOnly` y `user?.isAdmin` no existe o es falso, redirige a `/`.
+
+Cómo explicar el flujo cuando un usuario navega a `/admin` (paso a paso)
+
+1. El usuario escribe `/admin` en la barra o hace click en un enlace.
+2. React Router intenta renderizar la `Route` cuyo `path` es `/admin`.
+3. El `element` asociado es `<ProtectedRoute adminOnly={true}><AdminPanel/></ProtectedRoute>` — por tanto React monta `ProtectedRoute` primero.
+4. `ProtectedRoute` llama a `useAuth()`:
+
+- `AuthContext` (que fue inicializado en `App`) expone `isAuthenticated`, `user`, `isLoading`.
+- En el montaje inicial `AuthProvider` suele leer `localStorage.user` y/o hacer una verificación a la API (si está implementada) para poblar `user` y `isAuthenticated`.
+
+5. Mientras `isLoading` sea true, `ProtectedRoute` renderiza el placeholder de carga. Esto evita parpadeos y evita renderizar `AdminPanel` antes de saber si el usuario tiene permisos.
+6. Cuando `isLoading` sea false:
+
+- Si `isAuthenticated` es false, `ProtectedRoute` devuelve `<Navigate to="/login" replace />`. El router cambia la URL a `/login`.
+- Si `isAuthenticated` es true pero `adminOnly` y `user?.isAdmin` es falsy, se devuelve `<Navigate to="/" replace />` y el usuario es sacado a la home.
+- Si `isAuthenticated` es true y `user.isAdmin` es truthy, `ProtectedRoute` devuelve `children` y React finalmente renderiza `<AdminPanel />`.
+
+Código: dónde mirar
+
+- Montaje y rutas: `src/App.jsx` (función `AppContent` con `<Routes>`)
+- Punto de entrada: `src/main.jsx`
+- Protección de rutas: `src/components/ProtectedRoute.jsx`
+- Contexto de autentificación: `src/context/AuthContext.jsx` (inicialización del usuario, login, logout, normalización de `is_admin`/`isAdmin`)
+- Links / navegación en la UI: `src/components/Header.jsx` (muestra enlaces condicionales, por ejemplo, el link al panel admin solo si `user?.isAdmin`)
+
+Flujo de carga de una página con datos (ej. `/catalog`)
+
+1. User navigates to `/catalog`.
+2. Router renders the `Catalog` component.
+3. `Catalog` uses the `useGames()` hook; that hook calls `getAllGames()` from `src/services/gamesApi.js`.
+4. `gamesApi.getAllGames()` issues `fetch()` to the configured API endpoint and returns JSON (or throws on error).
+5. `useGames()` receives the data, sets `games` state and `loading` to false.
+6. `Catalog` maps `games` to `<GameCard />` components and UI renders.
+
+Edge cases and things to mention when explaining live:
+
+- Race conditions: React StrictMode in dev can double-invoke effects — you may see `useEffect` run twice during development; explain this when demonstrating `useGames()`.
+- HMR: Vite updates components in place; if `AuthContext` code changes you may need a full reload to reset context state during a demo.
+- Role trust: currently the client trusts the `user.isAdmin` flag in localStorage to gate UI. Explain that secure role checks must be enforced server-side as well.
+
+How to explain code execution concisely in an oral presentation
+
+- Start with the high-level sequence: "index → App → Providers → Router → Route → Component → Hooks → Services → API".
+- For protected routes: "Route renders ProtectedRoute → ProtectedRoute asks AuthContext → AuthContext answers (loading/auth/user) → ProtectedRoute decides to render child or redirect".
+- For data pages: "Component mounts → hook calls service → service fetches API → hook sets state → component renders with data".
+
+Small script you can say to demonstrate in a demo:
+
+"Al abrir la app, React monta `App`. `App` envuelve todo con `AuthProvider` y `CartProvider`. Las rutas están definidas en `AppContent`. Cuando voy a `/admin`, React Router monta `ProtectedRoute`, este consulta `AuthContext` y bloquea o deja pasar al panel según `isAuthenticated` y `isAdmin`. Para páginas de datos como catálogo, el componente usa `useGames()`, que llama al servicio `gamesApi` que hace `fetch` y devuelve los juegos; cuando el hook actualiza su estado el componente re-renderiza mostrando las tarjetas."
+
+Con esto tendrás un guion sencillo y el diagrama mental para explicar la navegación y el flujo de datos en el proyecto.
 
 ## 9. Llamadas a la API (cómo funcionan en este sistema)
 
@@ -299,7 +373,7 @@ Donde `getAllGames()` es un servicio que hace `fetch('/api/games')` y retorna un
   - Mejor: usar cookie httpOnly para sesión/token y un endpoint `/api/auth/me` que devuelva el usuario.
   - Mitigación intermedia: siempre verificar el rol en el servidor antes de permitir acciones sensibles y validar con un endpoint al montar la app.
 
-  9.7. Buenas prácticas al añadir nuevos endpoints
+    9.7. Buenas prácticas al añadir nuevos endpoints
 
 1. Crear la función en `src/services/<area>.js` que encapsule la llamada (URL, headers, body, parseo).
 2. Hacer que la función devuelva un objeto normalizado `{ success: boolean, data?, error? }`.

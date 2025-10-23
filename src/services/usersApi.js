@@ -4,9 +4,10 @@
  * Usa la misma API base que gamesApi.js: https://hakey-api-catalogo.vercel.app
  */
 
-// Misma URL base que gamesApi.js, solo cambian los endpoints
-const API_BASE_URL = "https://hakey-api-catalogo.vercel.app/api/usuarios";
-//https://hakey-api-catalogo.vercel.app/api
+// Allow overriding via Vite env var
+const VITE_API = import.meta.env.VITE_API_URL || "https://hakey-api-catalogo.vercel.app/api";
+const API_BASE_URL = `${VITE_API.replace(/\/$/, '')}/usuarios`;
+const API_FALLBACK_BASE = API_BASE_URL.replace(/\/api\//, "/").replace(/\/\/$/, "/").replace(/\/$/, "");
 
 /**
  * Register a new user

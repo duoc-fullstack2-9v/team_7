@@ -1,5 +1,8 @@
-const API_BASE_URL = "https://hakey-api-catalogo.vercel.app/api/games";
-const API_FALLBACK_URL = "https://hakey-api-catalogo.vercel.app/games";
+// Allow overriding the API base via Vite env var (VITE_API_URL)
+const VITE_API = import.meta.env.VITE_API_URL || "https://hakey-api-catalogo.vercel.app/api";
+const API_BASE_URL = `${VITE_API.replace(/\/$/, '')}/games`;
+// Fallback URL without the /api segment (some deployments use /games)
+const API_FALLBACK_URL = API_BASE_URL.replace(/\/api\//, "/").replace(/\/\/$/, "/").replace(/\/$/, "");
 
 // Función auxiliar para manejar errores de la API
 const handleResponse = async (response) => {
