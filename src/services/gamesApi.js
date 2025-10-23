@@ -1,4 +1,11 @@
-const API_BASE_URL = "https://hakey-api-catalogo.vercel.app/api/games";
+// Allow overriding the API base via Vite env var (VITE_API_URL)
+const VITE_API =
+  import.meta.env.VITE_API_URL || "https://hakey-api-catalogo.vercel.app/api";
+const API_BASE_URL = `${VITE_API.replace(/\/$/, "")}/games`;
+// Fallback URL without the /api segment (some deployments use /games)
+const API_FALLBACK_URL = API_BASE_URL.replace(/\/api\//, "/")
+  .replace(/\/\/$/, "/")
+  .replace(/\/$/, "");
 
 // Función auxiliar para manejar errores de la API
 const handleResponse = async (response) => {
@@ -8,7 +15,7 @@ const handleResponse = async (response) => {
       .catch(() => ({ message: "Error en la solicitud" }));
     throw new Error(error.message || `Error: ${response.status}`);
   }
-  
+
   // Si la respuesta está vacía (como en DELETE), retornar objeto vacío
   const text = await response.text();
   return text ? JSON.parse(text) : {};
@@ -17,7 +24,15 @@ const handleResponse = async (response) => {
 // GET - Obtener todos los juegos
 export const getAllGames = async () => {
   try {
-    const response = await fetch(API_BASE_URL);
+    // Try primary API path
+    let response = await fetch(API_BASE_URL);
+
+    // If not found, try fallback path (some deployments use /games)
+    if (response.status === 404) {
+      console.warn("Primary games endpoint returned 404, trying fallback...");
+      response = await fetch(API_FALLBACK_URL);
+    }
+
     return await handleResponse(response);
   } catch (error) {
     console.error("Error al obtener juegos:", error);
@@ -28,7 +43,13 @@ export const getAllGames = async () => {
 // GET por ID - Obtener un juego específico
 export const getGameById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
+    // Try primary API path
+    let response = await fetch(`${API_BASE_URL}/${id}`);
+
+    if (response.status === 404) {
+      response = await fetch(`${API_FALLBACK_URL}/${id}`);
+    }
+
     return await handleResponse(response);
   } catch (error) {
     console.error(`Error al obtener juego ${id}:`, error);
@@ -39,16 +60,25 @@ export const getGameById = async (id) => {
 // POST - Crear un nuevo juego
 export const createGame = async (gameData) => {
   try {
-    const response = await fetch(
-      "https://hakey-api-catalogo.vercel.app/games",
-      {
+    const response = await fetch(API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gameData),
+    });
+
+    // If server expects the non-/api endpoint
+    if (response.status === 404) {
+      console.warn("Create game primary endpoint 404, trying fallback...");
+      const fallbackResp = await fetch(API_FALLBACK_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(gameData),
-      }
-    );
+      });
+      return await handleResponse(fallbackResp);
+    }
+
     return await handleResponse(response);
   } catch (error) {
     console.error("Error al crear juego:", error);

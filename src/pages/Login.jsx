@@ -114,10 +114,27 @@ const Login = () => {
         return; // No olvides el return aquí
       }
 
-      // 2. Usas el objeto del usuario directamente (si la API devuelve 'email', 'name', etc.)
-      login(loginResult.user);
+      // 2. Extraer el objeto de usuario de la respuesta (compatibilidad: 'user' o 'usuario')
+      const userObj = loginResult.user || loginResult.usuario || loginResult;
 
-      navigate(loginResult.user.isAdmin ? "/admin" : "/");
+      // Detectar isAdmin en varias formas
+      const isAdminRaw =
+        userObj?.isAdmin ?? userObj?.is_admin ?? userObj?.is_admin_user ?? null;
+      const toBoolean = (v) => {
+        if (v === true || v === "true") return true;
+        if (v === false || v === "false") return false;
+        if (typeof v === "number") return v === 1;
+        if (typeof v === "string") return v === "1";
+        return Boolean(v);
+      };
+
+      const isAdmin = toBoolean(isAdminRaw);
+
+      // Guardar usuario normalizado en el contexto y navegar según rol
+      const normalizedUser = login(userObj);
+      console.log("🔒 Usuario normalizado (login):", normalizedUser);
+
+      navigate(isAdmin ? "/admin" : "/");
     } catch (error) {
       console.error("❌ Error en el login:", error);
       setErrors({

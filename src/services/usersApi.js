@@ -4,10 +4,13 @@
  * Usa la misma API base que gamesApi.js: https://hakey-api-catalogo.vercel.app
  */
 
-// Misma URL base que gamesApi.js, solo cambian los endpoints
-const API_BASE_URL = "https://hakey-api-catalogo.vercel.app/api/usuarios";
-const API_LOCAL_URL = "http://localhost:4000/api";
-//https://hakey-api-catalogo.vercel.app/api
+// Allow overriding via Vite env var
+const VITE_API =
+  import.meta.env.VITE_API_URL || "https://hakey-api-catalogo.vercel.app/api";
+const API_BASE_URL = `${VITE_API.replace(/\/$/, "")}/usuarios`;
+const API_FALLBACK_BASE = API_BASE_URL.replace(/\/api\//, "/")
+  .replace(/\/\/$/, "/")
+  .replace(/\/$/, "");
 
 /**
  * Register a new user
@@ -80,16 +83,26 @@ export const loginUser = async (credentials) => {
     console.log("🔐 Intentando login...");
     console.log("📡 URL:", `${API_BASE_URL}/login`);
     console.log("📤 Enviando:", {
+      // No logueamos la contraseña real
       email: credentials.email,
       password: "***",
     });
+
+    // Enviar ambos formatos para compatibilidad con APIs que esperan
+    // { email, password } o { correo, contrasena }
+    const payload = {
+      email: credentials.email || credentials.correo,
+      password: credentials.password || credentials.contrasena,
+      correo: credentials.email || credentials.correo,
+      contrasena: credentials.password || credentials.contrasena,
+    };
 
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(credentials),
+      body: JSON.stringify(payload),
     });
 
     console.log("📥 Status:", response.status);
@@ -112,9 +125,13 @@ export const loginUser = async (credentials) => {
       throw new Error(data.error || "Credenciales inválidas");
     }
 
+    // Algunas APIs devuelven el usuario en 'user', otras en 'usuario' (español).
+    // Normalizamos para devolver siempre el objeto de usuario.
+    const userObj = data.user || data.usuario || data;
+
     return {
       success: true,
-      user: data.user || data, // Acepta data.user o data directamente
+      user: userObj,
     };
   } catch (error) {
     console.error("❌ Error en loginUser:", error);
